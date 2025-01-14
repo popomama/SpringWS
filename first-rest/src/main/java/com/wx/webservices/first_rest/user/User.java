@@ -2,9 +2,14 @@ package com.wx.webservices.first_rest.user;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+
 public class User {
 	Integer id;
+	@Size(min=2, message="name too short")
 	String name;
+	@Past(message="birth date should be the past one")
 	LocalDate birthDate;
 	
 	public User(Integer id, String name, LocalDate birthDate) {

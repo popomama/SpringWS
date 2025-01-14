@@ -39,4 +39,14 @@ public class UserDaoService {
 		return user;
 	}
 
+	public void  delete(Integer id) {
+		// TODO Auto-generated method stub
+		
+		// TODO Auto-generated method stub
+				 Predicate<? super User> predicate =user -> user.getId()==id;
+				 users.removeIf(predicate);
+				
+		
+	}
+
 }

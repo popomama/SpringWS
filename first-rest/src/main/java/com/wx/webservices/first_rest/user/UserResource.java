@@ -3,6 +3,9 @@ package com.wx.webservices.first_rest.user;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*; 
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,16 +35,29 @@ public class UserResource {
 		return service.findAll();
 		
 	}
+	
+	
 
 	@GetMapping("/users/{id}")
-	public User retrieveUser(@PathVariable Integer id) throws NoUserFoundException
+	public EntityModel<User> retrieveUser(@PathVariable Integer id) throws NoUserFoundException
 	{
 		User user= service.findOne(id);
 		if(user==null)
 			throw new NoUserFoundException("id: "+ id);
 		
-		return user;
+		EntityModel<User> model = EntityModel.of(user);
+		WebMvcLinkBuilder link=linkTo(methodOn(this.getClass()).retrieveAllUsers());
+		model.add(link.withRel("all-users"));
+		return model;
 	}
+	
+	/*
+	 * @GetMapping("/users/{id}") public User retrieveUser(@PathVariable Integer id)
+	 * throws NoUserFoundException { User user= service.findOne(id); if(user==null)
+	 * throw new NoUserFoundException("id: "+ id);
+	 * 
+	 * return user; }
+	 */
 	
 	@DeleteMapping("/users/{id}")
 	public void deleteUser(@PathVariable Integer id) throws NoUserFoundException

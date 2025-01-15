@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.wx.webservices.first_rest.jpa.IPostRepository;
 import com.wx.webservices.first_rest.jpa.IUserRepository;
 
 import jakarta.validation.Valid;
@@ -25,11 +26,12 @@ public class UserJpaResource {
 
 	//UserDaoService service;
 	IUserRepository repo;
-	
-	public UserJpaResource(IUserRepository repo) {
+	IPostRepository repoPost;
+	public UserJpaResource(IUserRepository repo, IPostRepository repoPost) {
 		super();
 	//	this.service = service;
 		this.repo=repo;
+		this.repoPost=repoPost;
 	}
 
 
@@ -72,6 +74,21 @@ public class UserJpaResource {
 	
 	}
 	
+	@GetMapping("/jpa/users/{id}/posts")
+	public List<Post> retrievePostsForUser(@PathVariable Integer id) throws NoUserFoundException
+	{
+		//User user= service.findOne(id);
+				Optional<User> user = repo.findById(id); 
+				if(user.isEmpty())
+					throw new NoUserFoundException("id: "+ id);
+		return user.get().getPosts();		
+		 //service.delete(id);
+//		repo.deleteById(id);
+	
+	}
+	
+	
+	
 	
 	@PostMapping("/jpa/users")
 	public ResponseEntity<Object> createUser(@Valid @RequestBody User user)
@@ -82,5 +99,30 @@ public class UserJpaResource {
 		//ServletUriComponentsBuilder ;
 		return ResponseEntity.created(location ).build();
 				
+	}
+	
+	
+	@PostMapping("/jpa/users/{id}/posts")
+	public ResponseEntity<Object> createPostForUser(@PathVariable Integer id,
+			@Valid @RequestBody Post post) throws NoUserFoundException
+	{
+		//User user= service.findOne(id);
+		Optional<User> user = repo.findById(id); 
+		if(user.isEmpty())
+			throw new NoUserFoundException("id: "+ id);
+		
+		post.setUser(user.get());
+		
+		Post savedPost = repoPost.save(post);
+		
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/" 
+				+ savedPost.getId()).build().toUri();
+		//ServletUriComponentsBuilder ;
+		return ResponseEntity.created(location ).build();
+		
+	//	return user.get().getPosts();		
+		 //service.delete(id);
+//		repo.deleteById(id);
+	
 	}
 }

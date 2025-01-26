@@ -10,7 +10,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 //@EnableEurekaClient
 //@EnableEurekaClient
 //@EnableFeignClients
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 public class CurrencyExchangeServiceApplication {
 
 	public static void main(String[] args) {
